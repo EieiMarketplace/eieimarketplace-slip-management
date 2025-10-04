@@ -4,9 +4,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from app.route.router import router as slip_router
-from db.mongo import close_mongo_connection, connect_to_mongo
- 
+from app.routes.slip_router import router as slip_router
+from app.db.mongo import close_mongo_connection, connect_to_mongo
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,7 +34,7 @@ app.include_router(slip_router, prefix="/slip", tags=["Reservations"])
 
 
 async def serve_fastapi():
-    config = uvicorn.Config(app, host="0.0.0.0", port=7003)
+    config = uvicorn.Config(app, host="0.0.0.0", port=7004)
     server = uvicorn.Server(config)
     await server.serve()
     
