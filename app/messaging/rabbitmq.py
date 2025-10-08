@@ -65,7 +65,7 @@ async def send_message(exchange_name: str, routing_key: str, message: Dict[str, 
         print(f"Failed to send message to RabbitMQ: {str(e)}")
         raise
 
-async def update_reservation_status(reservation_id: str, status: str, custom_payload: Dict[str, Any] = None):
+async def update_reservation_status(market_id: str, reservation_id: str, status: str, custom_payload: Dict[str, Any] = None):
     """
     Send a message to update the reservation status
     
@@ -77,6 +77,7 @@ async def update_reservation_status(reservation_id: str, status: str, custom_pay
     message = custom_payload or {
         "event": "UPDATE_RESERVATION_STATUS",
         "reservationId": reservation_id,
+        "market_id": market_id,
         "vendorReservationStatus": status
     }
     

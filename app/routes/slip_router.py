@@ -107,17 +107,19 @@ async def create_slip(
         message_payload = {
             "event": "UPDATE_RESERVATION_STATUS",
             "reservationId": reservationId,
+            "marketId": slip["marketID"],
             "vendorReservationStatus": "ValidateSlip"
         }
         
         await update_reservation_status(
+            slip["marketID"],
             reservationId, 
             "ValidateSlip",
             message_payload
         )
         
         # Generate a URL for the uploaded slip
-        slip_url = generate_presigned_url(slip_key)
+        # slip_url = generate_presigned_url(slip_key)
         
         return {
             "message": "Slip uploaded successfully",
@@ -125,32 +127,31 @@ async def create_slip(
             "slipKey": slip["slipKey"],
             "marketID": slip["marketID"],
             "vendorReservationID": slip["vendorReservationID"],
-            "slip_url": slip_url
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to upload slip: {str(e)}")
 
-@router.post("/update-status")
-async def update_reservation_status_endpoint(
-    reservationId: str = Form(...),
-    status: str = Form(...),
-    user_info = Depends(require_role("admin"))
-):
-    # User is already verified as an admin by the require_role dependency
-    valid_statuses = ["Application", "WaitforPay", "ValidateSlip", "Merchant", "Retire"]
-    if status not in valid_statuses:
-        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
-    try:
-        # Create the message payload for RabbitMQ
-        message_payload = {
-            "event": "UPDATE_RESERVATION_STATUS",
-            "reservationId": reservationId,
-            "vendorReservationStatus": status
-        }
+# @router.post("/update-status")
+# async def update_reservation_status_endpoint(
+#     reservationId: str = Form(...),
+#     status: str = Form(...),
+#     user_info = Depends(require_role("admin"))
+# ):
+#     # User is already verified as an admin by the require_role dependency
+#     valid_statuses = ["Application", "WaitforPay", "ValidateSlip", "Merchant", "Retire"]
+#     if status not in valid_statuses:
+#         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
+#     try:
+#         # Create the message payload for RabbitMQ
+#         message_payload = {
+#             "event": "UPDATE_RESERVATION_STATUS",
+#             "reservationId": reservationId,
+#             "vendorReservationStatus": status
+#         }
         
-        # Send the message to update reservation status
-        await update_reservation_status(reservationId, status, message_payload)
+#         # Send the message to update reservation status
+#         await update_reservation_status(reservationId, status, message_payload)
         
-        return {"message": f"Reservation status updated to {status}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update reservation status: {str(e)}")
+#         return {"message": f"Reservation status updated to {status}"}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to update reservation status: {str(e)}")
