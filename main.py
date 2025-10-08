@@ -6,16 +6,40 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from app.routes.slip_router import router as slip_router
 from app.db.mongo import close_mongo_connection, connect_to_mongo
+from app.messaging.rabbitmq import get_rabbitmq_connection
+import aio_pika
+
+async def setup_rabbitmq():
+    connection = await get_rabbitmq_connection()
+    channel = await connection.channel()
+
+    exchange = await channel.declare_exchange(
+        "vendor_reservation",
+        aio_pika.ExchangeType.TOPIC,
+        durable=True
+    )
+
+    # สร้าง queue ที่จะรับ message จาก exchange
+    queue = await channel.declare_queue(
+        "reservation_status_queue",
+        durable=True
+    )
+
+    # bind queue กับ exchange ตาม routing key
+    await queue.bind(exchange, routing_key="reservation.status")
+
+    print("✅ RabbitMQ exchange & queue created and bound successfully!")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await connect_to_mongo()
+    await setup_rabbitmq()
     yield
     # Shutdown
     close_mongo_connection()
     
-app = FastAPI(title="Eiei Marketplace Reservation Management", lifespan=lifespan)
+app = FastAPI(title="Eiei Slip Management", lifespan=lifespan)
 list = [ 
        
         "http://localhost:3000"

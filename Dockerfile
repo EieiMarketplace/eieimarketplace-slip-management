@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # copy source (root files + app package)
-COPY main.py pyproject.toml README.md uv.lock ./
+COPY main.py ./
 COPY app ./app
 
 # expose your FastAPI port

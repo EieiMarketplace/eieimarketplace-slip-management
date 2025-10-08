@@ -6,7 +6,20 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
     env_file:
       - .env
     ports:
       - "7004:7004"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
