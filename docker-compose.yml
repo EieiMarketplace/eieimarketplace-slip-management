@@ -23,3 +23,16 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  eieimarketplace-vendor-reservation:
+    container_name: eiei-reservation
+    build:
+      context: ../eieimarketplace-vendor-reservation
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "7003:7003"
+    depends_on:
+      - rabbitmq

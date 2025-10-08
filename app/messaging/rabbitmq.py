@@ -50,7 +50,8 @@ async def send_message(exchange_name: str, routing_key: str, message: Dict[str, 
         # Create a message with content type
         amqp_message = aio_pika.Message(
             body=message_body,
-            content_type="application/json"
+            content_type="application/json" ,
+            delivery_mode=aio_pika.DeliveryMode.PERSISTENT
         )
         
         # Publish message
@@ -58,10 +59,10 @@ async def send_message(exchange_name: str, routing_key: str, message: Dict[str, 
             amqp_message,
             routing_key=routing_key
         )
-        
-        logger.info(f"Sent message to {exchange_name} with routing key {routing_key}")
+        print(f"Publishing event to exchange={exchange_name}, routing_key={routing_key}, payload={message}")
+        #logger.info(f"Sent message to {exchange_name} with routing key {routing_key}")
     except Exception as e:
-        logger.error(f"Failed to send message to RabbitMQ: {str(e)}")
+        print(f"Failed to send message to RabbitMQ: {str(e)}")
         raise
 
 async def update_reservation_status(reservation_id: str, status: str, custom_payload: Dict[str, Any] = None):
