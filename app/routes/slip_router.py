@@ -4,6 +4,8 @@ from typing import List, Dict, Any
 from pydantic import BaseModel
 import uuid
 from datetime import datetime
+from PIL import Image
+from app.core.image_check import validate_image
 
 # Authentication and authorization imports
 # - get_user_from_token: Validates token and returns UserInfo
@@ -91,12 +93,27 @@ async def create_slip(
     # Validate the file is an image
     if not slipFile.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Only image files are allowed")
+    
+    # Validate image integrity
+    validate_image(slipFile)
+
+    # validate file size (max 5MB)
+    if slipFile.spool_max_size and slipFile.spool_max_size > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File size exceeds 5MB limit")
+    
 
     try:
         # 1. Upload image to S3
         # Generate a unique key for the file
         unique_filename = f"{uuid.uuid4()}_{datetime.now().timestamp()}_{slipFile.filename}"
         
+        # check slipFile.file is not None
+        if slipFile.file is None:
+            raise HTTPException(status_code=400, detail="No file uploaded")
+        # check slipFile.file is image (slipfile is binary file)
+        if not slipFile.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Only image files are allowed")
+
         # Upload to S3 and get the file key
         slip_key = upload_file_to_s3(slipFile.file, unique_filename, slipFile.content_type)
         
