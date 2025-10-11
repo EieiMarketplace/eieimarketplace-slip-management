@@ -5,7 +5,7 @@ from pydantic import BaseModel
 import uuid
 from datetime import datetime
 from PIL import Image
-from core.image_check import validate_image
+from app.core.image_check import validate_image
 
 # Authentication and authorization imports
 # - get_user_from_token: Validates token and returns UserInfo
