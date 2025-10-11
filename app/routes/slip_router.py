@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from typing import List, Dict, Any
@@ -97,10 +98,6 @@ async def create_slip(
     # Validate image integrity
     validate_image(slipFile)
 
-    # validate file size (max 5MB)
-    if slipFile.spool_max_size and slipFile.spool_max_size > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File size exceeds 5MB limit")
-    
 
     try:
         # 1. Upload image to S3
