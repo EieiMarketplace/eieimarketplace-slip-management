@@ -7,6 +7,7 @@ import uvicorn
 from app.routes.slip_router import router as slip_router
 from app.db.mongo import close_mongo_connection, connect_to_mongo
 from app.messaging.rabbitmq import get_rabbitmq_connection
+from app.core.config import settings
 import aio_pika
 
 async def setup_rabbitmq():
@@ -46,7 +47,7 @@ list = [
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],       
+    allow_origins=["http://localhost:3000",settings.FRONTEND_URL],       
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],          
     allow_headers=["*"],          

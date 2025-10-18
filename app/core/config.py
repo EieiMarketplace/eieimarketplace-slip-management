@@ -18,10 +18,10 @@ class Settings(BaseSettings):
     RABBITMQ_URL: str = "amqp://guest:guest@rabbitmq:5672/"
     
     # Service URLs
-    USER_SERVICE_URL: str = "http://host.docker.internal:7001"
+    AUTH_SERVICE_URL: str = "http://host.docker.internal:7001"
     MARKET_SERVICE_URL: str = "http://host.docker.internal:7002/markets"
     VENDOR_RESERVATION_SERVICE_URL: str = "http://host.docker.internal:7003"
-
+    FRONTEND_URL:str="http://host.docker.internal:3000"
     class Config:
         env_file = ".env"
         case_sensitive = True
