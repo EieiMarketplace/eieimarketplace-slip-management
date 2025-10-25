@@ -12,7 +12,7 @@ _database = None
 async def connect_to_mongo():
     """Connect to MongoDB with retry logic and store global client & database."""
     global _mongo_client, _database
-    _mongo_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_URL)
+    _mongo_client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGO_SLIP_URL)
 
     for attempt in range(10):
         try:

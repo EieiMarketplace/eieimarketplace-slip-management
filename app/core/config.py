@@ -4,7 +4,7 @@ import os
 
 class Settings(BaseSettings):
     # MongoDB settings
-    MONGO_URL: str
+    MONGO_SLIP_URL: str
     MONGO_DB: str
     MONGO_DB_SLIP: str = "slips"
     
