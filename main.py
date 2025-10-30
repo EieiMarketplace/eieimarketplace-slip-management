@@ -55,7 +55,7 @@ app.add_middleware(
  
  
 
-app.include_router(slip_router, prefix="/slip", tags=["Reservations"])
+app.include_router(slip_router, prefix="/api/slip", tags=["Reservations"])
 
 
 async def serve_fastapi():
