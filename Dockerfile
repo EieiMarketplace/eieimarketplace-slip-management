@@ -3,23 +3,21 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH="/app:/app/grpc_generated:${PYTHONPATH}"
+# system deps
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends build-essential gcc && \
+    rm -rf /var/lib/apt/lists/*
 
-# install system deps (optional)
-# RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
-
+# install Python deps first for better caching
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# copy source (root files + app package)
+COPY main.py ./
+COPY app ./app
 
-COPY app/ ./ 
+# expose your FastAPI port
+EXPOSE 7004
 
-
-# Expose FastAPI and gRPC ports
-EXPOSE 7003
-
-# Start FastAPI + gRPC together
-# CMD ["python", "main.py"]
-CMD ["bash", "-c", "python main.py"]
+# run your entrypoint
+CMD ["python", "main.py"]
